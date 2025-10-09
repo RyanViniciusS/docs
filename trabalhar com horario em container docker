@@ -1,0 +1,73 @@
+##TRABALHANDO COM HORÁRIO EM CONTAINERS DOCKER
+
+Este guia explica como garantir que um container Docker use o mesmo fuso horário do host
+e como verificar o horário dentro do container.
+
+-----------------------------------------------------------
+1) Mapear o fuso horário do host para o container
+-----------------------------------------------------------
+
+No arquivo docker-compose.yml, adicione os seguintes volumes dentro do serviço que precisa
+do horário correto:
+```yml
+volumes:
+  - /etc/localtime:/etc/localtime:ro
+  - /etc/timezone:/etc/timezone:ro
+```
+Explicação:
+- /etc/localtime -> arquivo que define o horário local do sistema.
+- /etc/timezone -> arquivo que define o fuso horário configurado no host.
+- :ro -> monta como somente leitura, garantindo que o container não altere a configuração do host.
+
+Com isso, o container vai herdar o fuso horário do host, evitando problemas de horários
+incorretos em logs, cron jobs ou processos agendados.
+
+-----------------------------------------------------------
+2) Verificar o horário dentro do container
+-----------------------------------------------------------
+
+Após iniciar o container com os volumes mapeados, você pode conferir o horário usando:
+
+docker exec -it <nome_do_container> bash
+date
+
+Exemplo de saída:
+
+Thu Oct  9 19:00:00 BRT 2025
+
+Explicação:
+- date -> comando Linux que mostra a data e hora atuais do sistema.
+- BRT -> indica o fuso horário (Horário de Brasília).
+- Se o horário e o fuso estiverem corretos, significa que o mapeamento do host funcionou.
+
+-----------------------------------------------------------
+3) Observações importantes
+-----------------------------------------------------------
+
+1) Confirme o fuso do host antes de mapear:
+
+date
+
+- Deve retornar o horário desejado (ex.: BRT / GMT-3).
+
+2) Reinicie o container após alterações no docker-compose.yml:
+
+docker-compose down
+docker-compose up -d
+
+- Isso garante que o container carregue as novas configurações de horário.
+
+3) Variáveis de ambiente para cron jobs:
+
+Agora você pode definir variáveis de hora no seu container, sabendo que elas serão
+interpretadas corretamente:
+
+UPDATE_TIME_MANHA: 06:00
+UPDATE_TIME_NOITE: 19:00
+
+- Com o fuso mapeado, 19:00 será 19:00 no horário local do host, não UTC.
+
+-----------------------------------------------------------
+✅ Seguindo esses passos, todos os processos dentro do container
+   (logs, cron jobs, alertas) vão respeitar o fuso horário correto.
+-----------------------------------------------------------
