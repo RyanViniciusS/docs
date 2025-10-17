@@ -1,0 +1,7 @@
+| Tipo         | Base       | Exemplo de criação                         | Propósito                           |
+| ------------ | ---------- | ------------------------------------------ | ----------------------------------- |
+| **feature/** | develop    | `git flow feature start nova-tela-login`   | Novas funcionalidades / melhorias   |
+| **bugfix/**  | develop    | `git flow bugfix start corrigir-validacao` | Correção de bugs em desenvolvimento |
+| **release/** | develop    | `git flow release start v1.1.0`            | Preparar para deploy                |
+| **hotfix/**  | main       | `git flow hotfix start auth-error`         | Corrigir bug crítico em produção    |
+| **support/** | (opcional) | `git flow support start legacy-fix`        | Manutenção de versões antigas       |
